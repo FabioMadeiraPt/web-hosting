@@ -1,3 +1,4 @@
+import OfflineWebViewTests from '@/components/OfflineWebViewTests';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,6 +7,8 @@ export default function TabTwoScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         <Text>Explore tab</Text>
+
+        <OfflineWebViewTests />
       </View>
     </SafeAreaView>
   );

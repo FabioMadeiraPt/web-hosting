@@ -20,7 +20,7 @@ const OfflineWebViewTests = () => {
   const assetsMap: Record<string, any> = {
     'index.html': indexHtml,
     //'favicon.ico': favicon,
-    // 'style.css': styleCss,
+    'index.css': styleCss,
     // 'script.js': scriptJs,
   };
 
@@ -32,7 +32,7 @@ const OfflineWebViewTests = () => {
       await FileSystem.makeDirectoryAsync(distFolderUri, { intermediates: true });
       console.log(`Created dist folder at ${distFolderUri}`);
       // List of files in the assets/dist folder
-      const files = ['index.html'];
+      const files = ['index.html', 'index.css'];
 
       await Promise.all(
         files.map(async (file) => {

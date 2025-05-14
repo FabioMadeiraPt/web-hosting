@@ -1,4 +1,4 @@
-import OfflineWebViewTests from '@/components/OfflineWebViewTests';
+import StaticTest from '@/components/StaticTest';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,7 +8,7 @@ export default function HomeScreen() {
       <View style={{ flex: 1, padding: 16 }}>
         <Text>Home Page</Text>
 
-        <OfflineWebViewTests />
+        <StaticTest />
       </View>
     </SafeAreaView>
   );
