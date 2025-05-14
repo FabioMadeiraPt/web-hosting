@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="./vite.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web hosting test</title>
+        <!-- <script>
+      // Override console.log to send logs to React Native
+      (function () {
+        const originalLog = console.log;
+        console.log = function (...args) {
+          originalLog(...args); // Keep the original behavior
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'log', message: args }));
+          }
+        };
+      })();
+    </script> -->
+    <!-- <script data-id="scandit-main" type="module" crossorigin src="./index.js"></script> -->
+    <!-- <link rel="stylesheet" crossorigin href="./index.css"> -->
+    <script src="test.js"></script>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <div style="font-size: 50px;">hey inside webview</div>
+    <div class="myclass">hey inside webview</div>
+    <div id="root"></div>
+    <!-- <script>
+      console.log('This is a log from the WebView!');
+    </script> -->
+  </body>
+</html>
