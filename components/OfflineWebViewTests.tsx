@@ -1,17 +1,19 @@
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import TcpSocket from 'react-native-tcp-socket';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import { WebView } from 'react-native-webview';
+import * as FileSystem from 'expo-file-system';
+import TcpSocket from 'react-native-tcp-socket';
+import { Asset } from 'expo-asset';
 
 // Static imports for assets
 import indexHtml from '../assets/dist/index.html';
+import styleCss from '../assets/dist/index.css';
+import scriptJs from '../assets/dist/index.js';
 // import favicon from '../assets/dist/favicon.ico';
 
 const OfflineWebViewTests = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   // Map filenames to their corresponding assets
@@ -54,12 +56,9 @@ const OfflineWebViewTests = () => {
         await copyDistFolder();
 
         const distFolderUri = FileSystem.documentDirectory + 'dist/';
-        let server: TcpSocket.Server | null = null;
 
         // Start the custom web server
-        server = TcpSocket.createServer((socket) => {
-          console.log('Client connected');
-
+        const server = TcpSocket.createServer((socket) => {
           // Set a timeout to prevent hanging connections
           socket.setTimeout(5000, () => {
             console.log('Connection timed out');
@@ -82,16 +81,15 @@ const OfflineWebViewTests = () => {
             const match = request.match(/GET (.+?) HTTP/); // Extract the requested file path
             const filePath = match ? match[1] : '/index.html'; // Default to index.html
 
-            console.log(`Received request for: ${filePath}`);
-
+            const distFolderUri = FileSystem.documentDirectory + 'dist/';
             const fileUri = distFolderUri + (filePath === '/' ? 'index.html' : filePath.slice(1));
 
             try {
               // Handle favicon.ico explicitly
               if (filePath === '/favicon.ico') {
-                const response = `HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\nContent-Length: 0\r\nConnection: close\r\n\r\n`;
+                const response = `HTTP/1.1 200 OK\r\nContent-Type: image/x-icon\r\nContent-Length: 0\r\n\r\n`;
                 socket.write(response);
-                socket.end();
+                socket.destroy();
                 return;
               }
 
@@ -102,31 +100,19 @@ const OfflineWebViewTests = () => {
                   ? 'application/javascript'
                   : filePath.endsWith('.css')
                     ? 'text/css'
-                    : 'text/plain';
+                    : //: 'text/plain';
+                      'text/html';
 
-              // Add Content-Length header to help browsers process the response correctly
-              const contentLength = Buffer.byteLength(fileContent, 'utf8');
-              const response = `HTTP/1.1 200 OK\r\nContent-Type: ${contentType}\r\nContent-Length: ${contentLength}\r\nConnection: close\r\n\r\n${fileContent}`;
-
-              console.log(`Serving ${filePath} (${contentLength} bytes)`);
+              const response = `HTTP/1.1 200 OK\r\nContent-Type: ${contentType}\r\n\r\n${fileContent}`;
+              console.log('Response:', response);
               socket.write(response);
             } catch (err) {
-              const errorMessage = 'File not found';
-              const contentLength = Buffer.byteLength(errorMessage, 'utf8');
-              const response = `HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: ${contentLength}\r\nConnection: close\r\n\r\n${errorMessage}`;
-
+              const response = 'HTTP/1.1 404 Not Found\r\n\r\nFile not found';
               console.error('File not found:', fileUri, err);
               socket.write(response);
             }
-
-            // End the socket properly instead of destroying it
-            socket.end();
+            socket.destroy();
           });
-        });
-
-        server.on('error', (err) => {
-          console.error('Server error:', err);
-          setError('Server error: ' + err.message);
         });
 
         server.listen(8080, '127.0.0.1', () => {
