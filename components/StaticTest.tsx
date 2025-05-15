@@ -5,10 +5,12 @@ import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, View } from 'r
 import { WebView } from 'react-native-webview';
 
 // Import assets from the correct path
+import styleCss from '../assets/dist/index.css';
 import indexHtml from '../assets/dist/index.html';
+import indexJs from '../assets/dist/index.js';
 
 const StaticTest = () => {
-  const [localHtmlUri, setLocalHtmlUri] = useState(null);
+  const [localHtmlUri, setLocalHtmlUri] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
   const [showDebug, setShowDebug] = useState(false);
@@ -23,7 +25,8 @@ const StaticTest = () => {
         // Create a mapping of assets to copy
         const assetsToCopy = {
           'index.html': indexHtml,
-          //'index.css': styleCss,  // if i add this it will not work
+          'index.css': styleCss,
+          //'index.js': indexJs,
         };
 
         // Create the dist directory if it doesn't exist
@@ -51,7 +54,7 @@ const StaticTest = () => {
 
             // Copy file to local FS
             await FileSystem.copyAsync({
-              from: asset.localUri,
+              from: asset.localUri || '',
               to: targetPath,
             });
 
@@ -82,7 +85,7 @@ const StaticTest = () => {
         // Wait for all copy operations to complete
         await Promise.all(copyPromises);
         console.log('All files copied successfully!');
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error in copyHtmlToFileSystem:', err);
         setError(err.message || 'Unknown error occurred during file copy');
       } finally {
